@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户注册</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="/css/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/css/icon.css">
+    <style type="text/css">
+        #ff label{
+            display:block;
+            width:100px;
+        }
+    </style>
+    <script type="text/javascript" src="/js/jquery-1.6.1.min.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            // 通过js动态绑定校验
+            /*
+            $('#field_email').attr("validType","email");
+            $('#field_email').attr("required","true");
+            $('#field_name').attr("required","true");
+            // */
+
+            // 通过json动态绑定校验
+            //*
+            // get(url) url = /vo_model.js  js扩展名的用意就是nginx可以做缓存
+            var json_validation ={"email": {"required":"true","validType":"email"},"name":{"required":"true"}};
+
+            for(var field in json_validation){
+                var field_valid_data = json_validation[field];
+                // console.log(field,field_valid_data);
+                var input = $('#field_'+field)
+                for(var attr in field_valid_data){
+                    input.attr(attr,field_valid_data[attr]);
+                }
+            }
+            // */
+        });
+    </script>
+    <script type="text/javascript" src="/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            $('#ff').form({
+                url:'/user/register',
+                onSubmit:function(){
+                    return $(this).form('validate');
+                },
+                success:function(data){
+                    $.messager.alert('Info', data, 'info');
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+<div style="width:230px;background:#fafafa;padding:10px;">
+    <div style="padding:3px 2px;border-bottom:1px solid #ccc">Form Validation</div>
+    <form id="ff" method="post">
+        <div>
+            <label for="name">用户名:</label>
+            <input id="field_name" class="easyui-validatebox" type="text" name="name"></input>
+        </div>
+        <div>
+            <label for="email">Email:</label>
+            <input id="field_email" class="easyui-validatebox" type="text" name="email"></input>
+        </div>
+        <div>
+            <input type="submit" value="Submit">
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
