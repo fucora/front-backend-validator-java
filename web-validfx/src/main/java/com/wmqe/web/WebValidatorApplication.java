@@ -1,4 +1,4 @@
-package com.wmqe.web.validfx;
+package com.wmqe.web;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

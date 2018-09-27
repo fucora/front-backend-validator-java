@@ -1,4 +1,4 @@
-package com.wmqe.web.validfx.vo;
+package com.wmqe.web.vo;
 
 import com.wmqe.web.validfx.annotations.Email;
 import com.wmqe.web.validfx.annotations.Length;

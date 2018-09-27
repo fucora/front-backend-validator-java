@@ -6,9 +6,6 @@ import javax.validation.ConstraintValidatorContext;
 
 /**
  * 字符长度校验类
- *
- * @author MagicYang
- * @date 2018年9月5日
  */
 public class LengthValidator implements ConstraintValidator<Length, String> {
     

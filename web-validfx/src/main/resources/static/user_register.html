@@ -13,63 +13,90 @@
         }
     </style>
     <script type="text/javascript" src="/js/jquery-1.6.1.min.js"></script>
+
+    <script type="text/javascript" src="/js/HttpClient.js"></script>
+
     <script type="text/javascript">
-        $(function(){
-            // 通过js动态绑定校验
-            /*
-            $('#field_email').attr("validType","email");
-            $('#field_email').attr("required","true");
-            $('#field_name').attr("required","true");
-            // */
-
-            // 通过json动态绑定校验
-            //*
-            // get(url) url = /vo_model.js  js扩展名的用意就是nginx可以做缓存
-            var json_validation ={"email": {"required":"true","validType":"email"},"name":{"required":"true"}};
-
-            for(var field in json_validation){
-                var field_valid_data = json_validation[field];
-                // console.log(field,field_valid_data);
-                var input = $('#field_'+field)
-                for(var attr in field_valid_data){
-                    input.attr(attr,field_valid_data[attr]);
-                }
+        var api = new HttpClient();
+        function register() {
+            var form = $('#ff');
+            console.log(form.form('validate'),"validate result");
+            if(form.form('validate')) {
+                var userId = form.find("input[name='userId']").val();
+                var email = form.find("input[name='email']").val();
+                api.post({
+                    url: "/users/register", data: {userId: userId, email: email}, success: function (resp) {
+                        console.log(resp);
+                    }
+                });
             }
-            // */
-        });
-    </script>
-    <script type="text/javascript" src="/js/jquery.easyui.min.js"></script>
-    <script type="text/javascript">
-        $(function(){
-            $('#ff').form({
-                url:'/user/register',
-                onSubmit:function(){
-                    return $(this).form('validate');
-                },
-                success:function(data){
-                    $.messager.alert('Info', data, 'info');
-                }
-            });
-        });
+        }
     </script>
 </head>
 <body>
 <div style="width:230px;background:#fafafa;padding:10px;">
-    <div style="padding:3px 2px;border-bottom:1px solid #ccc">Form Validation</div>
+    <div style="padding:3px 2px;border-bottom:1px solid #ccc">用户注册</div>
     <form id="ff" method="post">
         <div>
-            <label for="name">用户名:</label>
-            <input id="field_name" class="easyui-validatebox" type="text" name="name"></input>
+            <label for="field_userId">用户名:</label>
+            <input id="field_userId" class="easyui-validatebox" type="text" name="userId"></input>
         </div>
         <div>
-            <label for="email">Email:</label>
+            <label for="field_email">Email:</label>
             <input id="field_email" class="easyui-validatebox" type="text" name="email"></input>
         </div>
         <div>
-            <input type="submit" value="Submit">
+            <input type="button" onclick="javascript:register();" value="保存">
         </div>
     </form>
 </div>
+<!-- -->
+<script type="text/javascript">
+    var bindVoModel = function (json) {
+        console.log(json,"bindVoModel");
 
+        for(var i in json){
+            var f = json[i];
+            var form = $("#"+f.form);
+            if(form[0]){
+                for(var j in f.items){
+                    var item = f.items[j];
+                    var input = form.find("input[name='" + item.propertyName + "']");
+                    if(input[0]){
+                        if(item.required)
+                            input.attr("required",item.required);
+                        if(item.ruleName)
+                            input.attr("validType",item.ruleName);
+                    }
+                }
+            }
+        }
+
+//        $(function(){
+//
+//            // 通过json动态绑定校验
+//            //*
+//            // get(url) url = /vo_model.js  js扩展名的用意就是nginx可以做缓存
+//            var json_validation ={"email": {"required":"true","validType":"email"},"userId":{"required":"true"}};
+//
+//            for(var field in json_validation){
+//                var field_valid_data = json_validation[field];
+//                // console.log(field,field_valid_data);
+//                var input = $('#field_'+field)
+//                for(var attr in field_valid_data){
+//                    input.attr(attr,field_valid_data[attr]);
+//                }
+//            }
+//            // */
+//        });
+    };
+</script>
+<script type="text/javascript" src="/validators/models/ff:user?callback=bindVoModel"></script>
+
+<script type="text/javascript" src="/js/jquery.easyui.min.js"></script>
+
+<!-- 自定义校验规则 -->
+<script type="text/javascript" src="/js/validate-rules.js"></script>
+<script type="text/javascript" src="/validators/rules?callback=extendValidateRules"></script>
 </body>
 </html>

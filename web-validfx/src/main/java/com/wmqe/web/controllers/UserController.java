@@ -1,13 +1,13 @@
-package com.wmqe.web.validfx.controllers;
+package com.wmqe.web.controllers;
 
-import com.wmqe.web.validfx.vo.UserVo;
+import com.wmqe.web.vo.UserVo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
 
     /**
