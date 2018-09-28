@@ -21,11 +21,19 @@
         function register() {
             var form = $('#ff');
             console.log(form.form('validate'),"validate result");
-            if(form.form('validate')) {
-                var userId = form.find("input[name='userId']").val();
-                var email = form.find("input[name='email']").val();
+            if(form.form('validate') || true) {
+//                var userId = form.find("input[name='userId']").val();
+//                var email = form.find("input[name='email']").val();
+
+                var data = {};
+                var inputs = form.find("[name]");
+                inputs.each(function(index,element){
+                    var name = $(element).attr("name");
+                    data[name] = $(element).val();
+                    //console.log(element,index);
+                });
                 api.post({
-                    url: "/users/register", data: {userId: userId, email: email}, success: function (resp) {
+                    url: "/users/register", data: data, success: function (resp) {
                         console.log(resp);
                     }
                 });
