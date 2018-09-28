@@ -1,6 +1,6 @@
 package com.wmqe.web.validfx.models;
 
-public class ValidatorInfo {
+public class ValidatorInfo extends ParameterMap{
     /**
      * 属性名称
      */
@@ -8,7 +8,7 @@ public class ValidatorInfo {
     /**
      * 规则名称
      */
-    private String[] ruleName;
+    private ValidatorRule[] rules;
     /**
      * 是否必须
      */
@@ -30,11 +30,20 @@ public class ValidatorInfo {
         this.propertyName = propertyName;
     }
 
-    public String[] getRuleName() {
-        return ruleName;
+    public ValidatorRule[] getRules() {
+        return rules;
     }
 
-    public void setRuleName(String[] ruleName) {
-        this.ruleName = ruleName;
+    public void setRules(ValidatorRule[] rules) {
+        this.rules = rules;
     }
+
+    //
+//    public String[] getRuleName() {
+//        return ruleName;
+//    }
+//
+//    public void setRuleName(String[] ruleName) {
+//        this.ruleName = ruleName;
+//    }
 }

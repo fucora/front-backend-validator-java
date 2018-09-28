@@ -9,10 +9,15 @@ import javax.validation.ConstraintValidatorContext;
 /**
  * 字符串非空校验类
  */
-public class NotEmptyValidator implements ConstraintValidator<NotEmpty, String> {
-    
+public class NotEmptyValidator extends BaseValidator<NotEmpty> {
+
     @Override
-    public void initialize(NotEmpty constraintAnnotation) {
+    public void onLoad() {
+
+    }
+
+    @Override
+    public void onInitialize(NotEmpty constraintAnnotation) {
     }
 
     @Override

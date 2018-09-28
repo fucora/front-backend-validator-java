@@ -14,6 +14,10 @@ public class EmailValidator extends RegexValidator<Email> {
 
     public static final String REGEX_EMAIL = "^[\\w-]+@[\\w-]+(\\.[\\w-]+)+$";
 
+    @Override
+    public void onLoad() {
+
+    }
     public EmailValidator()  {
         super(REGEX_EMAIL, "格式不正确");
     }

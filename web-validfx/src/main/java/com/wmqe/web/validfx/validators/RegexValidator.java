@@ -7,12 +7,16 @@ import javax.validation.ConstraintValidatorContext;
 import java.lang.annotation.Annotation;
 import java.util.regex.Pattern;
 
-public class RegexValidator<A extends Annotation> implements ConstraintValidator<A, String> {
+public abstract class RegexValidator<A extends Annotation> extends BaseValidator<A> {
 
-    private String regex = null;
-    private String message = null;
-
+    private final String PARAM_NAME_REGEX = "regex";
     public RegexValidator() {
+
+    }
+
+    @Override
+    public void onLoad() {
+
     }
 
     public RegexValidator(String regex, String message) {
@@ -21,35 +25,20 @@ public class RegexValidator<A extends Annotation> implements ConstraintValidator
         if( StringUtil.isEmpty(message))
             throw new NullPointerException("message is null");
 
-        this.regex = regex;
-        this.message = message;
-    }
-
-    public String getRegex() {
-        return regex;
-    }
-
-    public void setRegex(String regex) {
-        this.regex = regex;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
+        setParameter(PARAM_NAME_REGEX,regex);
+        this.setMessage(message);
     }
 
     @Override
-    public void initialize(A constraintAnnotation) {
+    public void onInitialize(A constraintAnnotation) {
     }
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        if(StringUtil.isNotEmpty(value) && !Pattern.matches(this.regex, value)) {
+        String regex = getParameterString(PARAM_NAME_REGEX);
+        if(StringUtil.isNotEmpty(value) && !Pattern.matches(regex, value)) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(message).addConstraintViolation();
+            context.buildConstraintViolationWithTemplate(this.getMessage()).addConstraintViolation();
             return false;
         }
         return true;

@@ -46,12 +46,34 @@
             <input id="field_email" class="easyui-validatebox" type="text" name="email"></input>
         </div>
         <div>
+            <label for="field_mobile">手机:</label>
+            <input id="field_mobile" class="easyui-validatebox" type="text" name="phone"></input>
+        </div>
+        <div>
             <input type="button" onclick="javascript:register();" value="保存">
         </div>
     </form>
 </div>
 <!-- -->
 <script type="text/javascript">
+    var getValidType = function (rules) {
+        for(var i in rules){
+            var rule = rules[i];
+            var ruleInfo = rule.name;
+            if(rule.parameters){
+                var ps = "";
+                for(var p in rule.parameters){
+                    if("message" == p)
+                        continue;
+                    ps += rule.parameters[p]+",";
+                }
+                if(ps.length > 1){
+                    return ruleInfo + "[" + ps.substr(0,ps.length-1) + "]"
+                }
+            }
+            return ruleInfo;
+        }
+    };
     var bindVoModel = function (json) {
         console.log(json,"bindVoModel");
 
@@ -65,8 +87,10 @@
                     if(input[0]){
                         if(item.required)
                             input.attr("required",item.required);
-                        if(item.ruleName)
-                            input.attr("validType",item.ruleName);
+                        if(item.rules && item.rules.length > 0) {
+                            var validType = getValidType(item.rules);
+                            input.attr("validType", validType);
+                        }
                     }
                 }
             }
@@ -96,7 +120,7 @@
 <script type="text/javascript" src="/js/jquery.easyui.min.js"></script>
 
 <!-- 自定义校验规则 -->
-<script type="text/javascript" src="/js/validate-rules.js"></script>
+<script type="text/javascript" src="/js/validate-rules.js?4"></script>
 <script type="text/javascript" src="/validators/rules?callback=extendValidateRules"></script>
 </body>
 </html>

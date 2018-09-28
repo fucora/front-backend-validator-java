@@ -4,8 +4,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.wmqe.web.validfx.annotations.Email;
 import com.wmqe.web.validfx.annotations.NotEmpty;
 import com.wmqe.web.validfx.models.ValidatorInfo;
+import com.wmqe.web.validfx.models.ValidatorRule;
 import com.wmqe.web.validfx.utils.Scanner;
+import com.wmqe.web.validfx.utils.StringUtil;
+import com.wmqe.web.validfx.validators.BaseValidator;
 import com.wmqe.web.validfx.validators.EmailValidator;
+import com.wmqe.web.validfx.validators.RegexValidator;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +22,12 @@ import javax.validation.Constraint;
 import javax.validation.ConstraintValidator;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/validators")
@@ -36,13 +43,40 @@ public class ValidatorController {
 //        emailRule.setRegex(EmailValidator.REGEX_EMAIL);
 //
 //        ruleList.add(emailRule);
-
+        List<Class<BaseValidator>> validatorTypes = Scanner.getValidatorTypes();
         List<JSONObject> ruleList = new ArrayList<>();
-        JSONObject emailRule = new JSONObject();
-        emailRule.put("ruleName","email");
-        emailRule.put("message","Email格式错误");
-        emailRule.put("regex",EmailValidator.REGEX_EMAIL);
-        ruleList.add(emailRule);
+        for (int i = 0; i < validatorTypes.size(); i++) {
+            Class<BaseValidator> validatorType = validatorTypes.get(i);
+            validatorType.getGenericSuperclass();
+            boolean isAbs = Modifier.isAbstract(validatorType.getModifiers()) ;
+            if(isAbs)continue;
+            BaseValidator validator = null;
+            try {
+                validator = validatorType.newInstance();
+            } catch (InstantiationException e) {
+                continue;
+            } catch (IllegalAccessException e) {
+                continue;
+            }
+
+            JSONObject rule = new JSONObject();
+            rule.put("ruleName",validator.getValidatorName());
+            rule.put("message",validator.getMessage());
+            validator.getParameters().forEach((k, v)->{
+                rule.put(k.toString(), v);
+            });
+
+//            if(validatorType.isAssignableFrom(RegexValidator.class)) {
+//                rule.put("regex", ((RegexValidator)validator).getRegex());
+//            }
+            ruleList.add(rule);
+        }
+
+//        JSONObject emailRule = new JSONObject();
+//        emailRule.put("ruleName","email");
+//        emailRule.put("message","Email格式错误");
+//        emailRule.put("regex",EmailValidator.REGEX_EMAIL);
+//        ruleList.add(emailRule);
 
         return new ResponseEntity<Object>(ruleList, HttpStatus.OK);
     }
@@ -66,7 +100,7 @@ public class ValidatorController {
             return null;
 
         boolean required = false;
-        List<String> ruleList = new ArrayList<>();
+        List<ValidatorRule> ruleList = new ArrayList<>();
 
         for (int i = 0; i < annotations.length; i++) {
             Annotation annotation = annotations[i];
@@ -78,21 +112,42 @@ public class ValidatorController {
             Class<? extends ConstraintValidator<?,?>>[] validatedBy = getValidatedBy(annotationType);
             if(validatedBy != null){
                 String annotationName = annotationType.getSimpleName();
-                annotationName = annotationName.substring(0,1).toLowerCase() + annotationName.substring(1);
-                ruleList.add(annotationName);
+
+                ValidatorRule rule = new ValidatorRule();
+                rule.setName(StringUtil.camelCase(annotationName));
+
+                Method[] methods = annotationType.getDeclaredMethods();
+
+                for (int j = 0; j < methods.length; j++) {
+                    Method method = methods[j];
+                    String methodName = method.getName();
+                    if("groups".equals(methodName) || "payload".equals(methodName) ){
+                        continue;
+                    }
+                    try {
+                        Object val = method.invoke(annotation,null);
+                        rule.setParameter(methodName,val);
+                    } catch (IllegalAccessException e) {
+                        continue;
+                    } catch (InvocationTargetException e) {
+                        continue;
+                    }
+                }
+
+                ruleList.add(rule);
             }
         }
 
         if(ruleList.size() == 0)
             return null;
 
-        String[] rules = new String[ruleList.size()];
+        ValidatorRule[] rules = new ValidatorRule[ruleList.size()];
         ruleList.toArray(rules);
 
         ValidatorInfo validatorInfo = new ValidatorInfo();
         validatorInfo.setPropertyName(field.getName());
         validatorInfo.setRequired(required);
-        validatorInfo.setRuleName(rules);
+        validatorInfo.setRules(rules);
 
         return validatorInfo;
     }
@@ -104,15 +159,6 @@ public class ValidatorController {
             return null;
 
         Field[] fields = cls.getDeclaredFields();
-//        Method[] methods = cls.getMethods();
-//        for (int i = 0; i < methods.length ; i++) {
-//            Method method = methods[i];
-//
-//            //AnnotationUtils.findAnnotation()
-//
-//        }
-
-
         List<ValidatorInfo> validatorInfoList = new ArrayList<>();
         for (int i = 0; i < fields.length ; i++) {
             Field field = fields[i];
@@ -122,16 +168,7 @@ public class ValidatorController {
             }
             validatorInfoList.add(vi);
         }
-//        ValidatorInfo userId = new ValidatorInfo();
-//        userId.setPropertyName("userId");
-//        userId.setRequired(true);
-//        ValidatorInfo email = new ValidatorInfo();
-//        email.setPropertyName("email");
-//        email.setRequired(true);
-//        email.setRuleName(new String[]{"email"});
-//
-//        validatorInfoList.add(userId);
-//        validatorInfoList.add(email);
+
         return validatorInfoList;
     }
 
@@ -147,8 +184,6 @@ public class ValidatorController {
             info.put("items",getValidatorInfos(infos[1]));
             modelList.add(info);
         }
-
-
         return new ResponseEntity<Object>(modelList, HttpStatus.OK);
     }
 }

@@ -20,7 +20,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface Email {
     String value() default "";
     
-    String message() default "格式不正确";
+    String message() default "Email格式不正确";
 
     Class<?>[] groups() default {};
 

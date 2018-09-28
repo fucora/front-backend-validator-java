@@ -7,24 +7,29 @@ import javax.validation.ConstraintValidatorContext;
 /**
  * 字符长度校验类
  */
-public class LengthValidator implements ConstraintValidator<Length, String> {
-    
-    private int min;
-    private int max;
+public class LengthValidator extends BaseValidator<Length> {
+    private final String PARAM_NAME_MIN = "min";
+    private final String PARAM_NAME_MAX = "max";
+    @Override
+    public void onLoad() {
+
+    }
 
     @Override
-    public void initialize(Length parameters) {
-        min = parameters.min();
-        max = parameters.max();
+    public void onInitialize(Length parameters) {
+        int min = parameters.min();
+        int max = parameters.max();
+        setParameter(PARAM_NAME_MIN, min);
+        setParameter(PARAM_NAME_MAX, max);
     }
     
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        
         if ( value == null ) {
             return true;
         }
-        
+        int min = getParameterInt(PARAM_NAME_MIN, 0);
+        int max = getParameterInt(PARAM_NAME_MAX, Integer.MAX_VALUE);
         int valueLength = value.length();
         if(max == Integer.MAX_VALUE && min > 0 && valueLength < min) {
             context.disableDefaultConstraintViolation();

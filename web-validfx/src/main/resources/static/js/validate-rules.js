@@ -4,15 +4,30 @@ var extendValidateRules = function (rules) {
     var regexRules = {};
     for(var i in rules){
         var rule = rules[i];
-        if(rule.regex){
-            regexRules[rule.ruleName] = {};
-            var thisRule = regexRules[rule.ruleName];
-            thisRule.regex = new RegExp(rule.regex);
-            thisRule.message = rule.message;
-            thisRule.validator = function (value) {
+        regexRules[rule.ruleName] = {};
+
+        (function () {
+            if(rule.regex){
+                var thisRule = regexRules[rule.ruleName];
+                thisRule.regex = new RegExp(rule.regex);
+                thisRule.message = rule.message;
+                thisRule.validator = function (value) {
                     return thisRule.regex.test(value);
                 };
-        }
+            }else if(rule.ruleName === "length"){
+                var thisRule = regexRules[rule.ruleName];
+                thisRule.message = "输入的字符长度不能超过{1}";
+                thisRule.validator = function(val, params){
+                    var len = $.trim(val).length;
+                    if(params[0] > 0 && len < params[0]){
+                        thisRule.message = "输入的字符长度不能少于{0}";
+                    }else{
+                        thisRule.message = "输入的字符长度不能超过{1}";
+                    }
+                    return len >= params[0] && len<= params[1];
+                };
+            }
+        })();
     }
     console.log(regexRules,"extendValidateRules");
     $.extend($.fn.validatebox.defaults.rules,regexRules);

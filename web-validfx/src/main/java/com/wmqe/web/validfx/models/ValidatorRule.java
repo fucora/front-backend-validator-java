@@ -1,29 +1,37 @@
 package com.wmqe.web.validfx.models;
 
-public class ValidatorRule {
+public class ValidatorRule extends ParameterMap{
     /**
      * 规则名称
      */
-    private String ruleName;
+    private String name;
 
-    /**
-     * 规则失败的消息
-     */
-    private String message;
-
-    public String getRuleName() {
-        return ruleName;
+    public String getName() {
+        return name;
     }
 
-    public void setRuleName(String ruleName) {
-        this.ruleName = ruleName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
+    //    /**
+//     * 规则失败的消息
+//     */
+//    private String message;
+//
+//    public String getRuleName() {
+//        return ruleName;
+//    }
+//
+//    public void setRuleName(String ruleName) {
+//        this.ruleName = ruleName;
+//    }
+//
+//    public String getMessage() {
+//        return message;
+//    }
+//
+//    public void setMessage(String message) {
+//        this.message = message;
+//    }
 }
