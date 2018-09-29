@@ -13,6 +13,7 @@ public class UserVo implements Serializable {
     @Length(max = 15,min = 5,payload = Severity.Info.class)
     private String userId;
     @Email
+    @Length(max = 12,min = 8)
     private String email;
     @Mobile
     private String phone;

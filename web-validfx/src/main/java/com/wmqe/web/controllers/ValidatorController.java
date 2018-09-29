@@ -139,7 +139,8 @@ public class ValidatorController {
                         continue;
                     }
                 }
-
+                rule.setParameter("message", rule.getMessage());
+                //rule
                 ruleList.add(rule);
             }
         }

@@ -94,22 +94,38 @@
 <!-- -->
 <script type="text/javascript">
     var getValidType = function (rules) {
+        var retRules = "";
         for(var i in rules){
             var rule = rules[i];
             var ruleInfo = rule.name;
             if(rule.parameters){
                 var ps = "";
                 for(var p in rule.parameters){
-                    if("message" == p)
-                        continue;
-                    ps += rule.parameters[p]+",";
+                    //if("message" == p)
+                    //    continue;
+                    var val = rule.parameters[p];
+                    if(typeof val === "undefined"){
+
+                    }else if(typeof val === "number"){
+                        ps += val+",";
+                    }else if(typeof val === "string"){
+                        ps += "\"" + val +"\",";
+                    }else{
+                        ps += "\"" + val +"\",";
+                    }
+
                 }
                 if(ps.length > 1){
-                    return ruleInfo + "[" + ps.substr(0,ps.length-1) + "]"
+                    retRules += "'" + ruleInfo + "[" + ps.substr(0,ps.length-1) + "]',"
+                    continue;
                 }
             }
-            return ruleInfo;
+            retRules += "'" + ruleInfo + "',";
         }
+        if(rules.length > 1)
+            return "[" + retRules.substr(0,retRules.length-1) + "]";
+
+        return retRules.substr(0,retRules.length-1);
     };
     var bindVoModel = function (json) {
         console.log(json,"bindVoModel");
@@ -122,12 +138,16 @@
                     var item = f.items[j];
                     var input = form.find("input[name='" + item.propertyName + "']");
                     if(input[0]){
+                        var data_options = "";
                         if(item.required)
-                            input.attr("required",item.required);
+                            data_options = "required:" + item.required + ",";
+                            //input.attr("required",item.required);
                         if(item.rules && item.rules.length > 0) {
                             var validType = getValidType(item.rules);
-                            input.attr("validType", validType);
+                            //input.attr("validType", validType);
+                            data_options += "validType:" + validType;
                         }
+                        input.attr("data-options",data_options);
                     }
                 }
             }
@@ -157,7 +177,7 @@
 <script type="text/javascript" src="/js/jquery.easyui.min.js"></script>
 
 <!-- 自定义校验规则 -->
-<script type="text/javascript" src="/js/validate-rules.js?4"></script>
+<script type="text/javascript" src="/js/validate-rules.js?5"></script>
 <script type="text/javascript" src="/validators/rules?callback=extendValidateRules"></script>
 </body>
 </html>

@@ -1,17 +1,17 @@
 var extendValidateRules = function (rules) {
-    //console.log(rules,"extendValidateRules");
-
     var regexRules = {};
     for(var i in rules){
         var rule = rules[i];
         regexRules[rule.ruleName] = {};
-
         (function () {
             if(rule.regex){
                 var thisRule = regexRules[rule.ruleName];
                 thisRule.regex = new RegExp(rule.regex);
                 thisRule.message = rule.message;
-                thisRule.validator = function (value) {
+                thisRule.validator = function (value, params) {
+                    if(params && params.length > 0){
+                        thisRule.message = params[params.length-1];
+                    }
                     return thisRule.regex.test(value);
                 };
             }else if(rule.ruleName === "length"){
