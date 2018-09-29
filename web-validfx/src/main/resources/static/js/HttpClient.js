@@ -14,6 +14,7 @@ function HttpClient() {
             type: method,
             contentType: "application/json",
             dataType: "json",
+            timeout:30000,
             data: (model == null ? null : JSON.stringify(model)),
             success: function (callback) {
                 if (success) {
