@@ -13,17 +13,18 @@
         }
     </style>
     <script type="text/javascript" src="/js/jquery-1.6.1.min.js"></script>
-
+    <script type="text/javascript" src="/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="/js/HttpClient.js"></script>
 
+    <script type="text/javascript" src="/js/validate-fx.js"></script>
     <script type="text/javascript">
+        // Validfx.debug = true;
         function register() {
             $(event.target).submitData({
                 url:"/users/register",
                 success: function (resp) {
                     console.log(resp);
-                },
-                isValid : false
+                }
             });
         }
     </script>
@@ -88,10 +89,7 @@
         </div>
     </form>
 </div>
-<script type="text/javascript" src="/js/validate-rules.js?37"></script>
-<!--<script type="text/javascript" src="/validators/models/ff:user,ff2:user?callback=bindVoModel"></script>-->
 
-<script type="text/javascript" src="/js/jquery.easyui.min.js"></script>
-<!--<script type="text/javascript" src="/validators/rules?callback=extendValidateRules"></script>-->
+
 </body>
 </html>
