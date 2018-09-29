@@ -14,14 +14,25 @@
     </style>
     <script type="text/javascript" src="/js/jquery-1.6.1.min.js"></script>
     <script type="text/javascript" src="/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/js/easyui-lang-zh_CN.js"></script>
+
     <script type="text/javascript" src="/js/HttpClient.js"></script>
 
-    <script type="text/javascript" src="/js/validate-fx.js"></script>
+    <script type="text/javascript" src="/js/validate-fx.js?8"></script>
     <script type="text/javascript">
-        // Validfx.debug = true;
+        Validfx.debug = true;
+        // Validfx.bindVoAttr = ":bindVo";
         function register() {
             $(event.target).submitData({
                 url:"/users/register",
+                success: function (resp) {
+                    console.log(resp);
+                }
+            });
+        }
+        function login() {
+            $(event.target).submitData({
+                url:"/users/login",
                 success: function (resp) {
                     console.log(resp);
                 }
@@ -32,7 +43,7 @@
 <body>
 <div style="width:230px;background:#fafafa;padding:10px;">
     <div style="padding:3px 2px;border-bottom:1px solid #ccc">用户注册</div>
-    <form id="ff" method="post" class="ff" bindVo="user">
+    <form method="post" class="ff" bindVo="user">
         <div>
             <label for="field_userId">用户名:</label>
             <input id="field_userId" class="easyui-validatebox" type="text" name="userId"></input>
@@ -70,22 +81,22 @@
 
 </div>
 <div style="width:230px;background:#fafafa;padding:10px;">
-    <form id="ff2" method="post" class="ff" bindVo="user">
+    <form  method="post" class="ff" bindVo="loginUser">
         <div>
             <label for="field_userId2">用户名:</label>
             <input id="field_userId2" class="easyui-validatebox" type="text" name="userId"></input>
         </div>
         <div>
-            <label for="field_email2">Email:</label>
-            <input id="field_email2" class="easyui-validatebox" type="text" name="email"></input>
+            <label for="field_password">密码:</label>
+            <input id="field_password" class="easyui-validatebox" type="text" name="password"></input>
         </div>
         <div>
-            <label for="field_mobile2">手机:</label>
-            <input id="field_mobile2" class="easyui-validatebox" type="text" name="phone"></input>
+            <label for="field_repwd">确认密码:</label>
+            <input id="field_repwd" class="easyui-validatebox" type="text" name="repwd" required="true" validType="equals['#field_password','确认密码和密码不一致']"></input>
         </div>
 
         <div>
-            <input type="button" onclick="javascript:register();" value="保存">
+            <input type="button" onclick="javascript:login();" value="登录">
         </div>
     </form>
 </div>

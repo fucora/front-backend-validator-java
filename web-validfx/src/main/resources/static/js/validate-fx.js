@@ -1,7 +1,20 @@
 if(typeof Validfx === "undefined"){
     var Validfx = {};
     Validfx.debug = false;
+    Validfx.bindVoAttr = "bindVo";
 }
+$.extend($.fn.validatebox.defaults.rules, {
+    equals: {
+        validator: function(value,param){
+            // if(param.length > 1){
+            //     this.message = param[1];
+            //     $(this).attr("invalidMessage",param[1]);
+            //     $.parser.parse($(this));
+            // }
+            return value == $(param[0]).val();
+        },
+        message: '{1}'
+    }});
 $.extend({
     callJsonp : function (url,success) {
         $.ajax({
@@ -65,16 +78,25 @@ $(function () {
                 }
             })();
         }
-        console.log(regexRules,"extendValidateRules");
+        if(Validfx.debug)
+            console.log(regexRules,"extendValidateRules");
+
         $.extend($.fn.validatebox.defaults.rules,regexRules);
     });
 
     var bindInfo = "";
+    var formIdx = 0;
     $(this).find("form").each(function(index,element){
         //$.parser.parse($(element));
-        var bindVo = $(element).attr("bindVo");
+        var bindVo = $(element).attr(Validfx.bindVoAttr);
         if(bindVo){
-            bindInfo += $(element).attr("id")+":"+bindVo+","
+            var formId = $(element).attr("id");
+            if(formId == null){
+                formId = "_form_" + formIdx;
+                formIdx++;
+                $(element).attr("id",formId);
+            }
+            bindInfo += formId +":"+bindVo+","
         }
     });
     if(bindInfo.length > 0){
@@ -119,7 +141,8 @@ var getValidType = function (rules) {
     //return retRules.substr(0,retRules.length-1);
 };
 var bindVoModel = function (json) {
-    console.log(json,"bindVoModel");
+    if(Validfx.debug)
+        console.log(json,"bindVoModel");
 
     for(var i in json){
         var f = json[i];
@@ -129,21 +152,17 @@ var bindVoModel = function (json) {
                 var item = f.items[j];
                 var input = form.find("input[name='" + item.propertyName + "']");
                 if(input[0]){
-                    var data_options = "";
-                    if(item.required)
-                        data_options = "required:" + item.required + ",";
-                    //input.attr("required",item.required);
                     if(item.rules && item.rules.length > 0) {
                         var validType = getValidType(item.rules);
-                        //input.attr("validType", validType);
-                        //data_options += "validType:" + validType;
-
                         input.validatebox({
                             required: item.required,
                             validType: validType
                         });
+                    }else if(item.required == true){
+                        input.validatebox({
+                            required: true
+                        });
                     }
-                    //input.attr("data-options",data_options);
                     $.parser.parse(input);
                 }
             }
