@@ -87,7 +87,6 @@ $(function () {
     var bindInfo = "";
     var formIdx = 0;
     $(this).find("form").each(function(index,element){
-        //$.parser.parse($(element));
         var bindVo = $(element).attr(Validfx.bindVoAttr);
         if(bindVo){
             var formId = $(element).attr("id");

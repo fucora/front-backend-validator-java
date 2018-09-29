@@ -19,7 +19,6 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity registerUser(@RequestBody(required = true) UserVo user ) {
 
-
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
