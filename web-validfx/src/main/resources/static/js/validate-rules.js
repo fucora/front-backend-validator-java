@@ -67,3 +67,96 @@ var extendValidateRules = function (rules) {
 //     });
 };
 
+var getValidType = function (rules) {
+    var retRules = "";
+    for(var i in rules){
+        var rule = rules[i];
+        var ruleInfo = rule.name;
+        if(rule.parameters){
+            var ps = "";
+            for(var p in rule.parameters){
+                //if("message" == p)
+                //    continue;
+                var val = rule.parameters[p];
+                if(typeof val === "number"){
+                    ps += val+",";
+                }else if(typeof val === "string"){
+                    ps += "\"" + val +"\",";
+                }else{
+                    ps += "\"" + val +"\",";
+                }
+            }
+            if(ps.length > 1){
+                retRules += "'" + ruleInfo + "[" + ps.substr(0,ps.length-1) + "]',"
+                continue;
+            }
+        }
+        retRules += "'" + ruleInfo + "',";
+    }
+    if(rules.length > 1)
+        return "[" + retRules.substr(0,retRules.length-1) + "]";
+
+    return retRules.substr(0,retRules.length-1);
+};
+var bindVoModel = function (json) {
+    console.log(json,"bindVoModel");
+
+    for(var i in json){
+        var f = json[i];
+        var form = $("#"+f.form);
+        if(form[0]){
+            for(var j in f.items){
+                var item = f.items[j];
+                var input = form.find("input[name='" + item.propertyName + "']");
+                if(input[0]){
+                    var data_options = "";
+                    if(item.required)
+                        data_options = "required:" + item.required + ",";
+                    //input.attr("required",item.required);
+                    if(item.rules && item.rules.length > 0) {
+                        var validType = getValidType(item.rules);
+                        //input.attr("validType", validType);
+                        data_options += "validType:" + validType;
+                    }
+                    input.attr("data-options",data_options);
+                }
+            }
+        }
+    }
+};
+
+$.fn.extend({
+    jsonData:function() {
+        return (function (element) {
+            var form = $(element);
+            if(!form.is("form")){
+                form = form.parents("form");
+            }
+            if(form[0] === undefined){
+                return null;
+            }
+            var data = {};
+            var inputs = form.find("[name]");
+            inputs.each(function(index,element){
+                var name = $(element).attr("name");
+                var val = $(element).val();
+                var inputType = $(element).attr("type");
+                if(inputType === "checkbox"){
+                    if($(element).is(':checked')){
+                        if(data[name] == null)
+                            data[name] = [];
+                        data[name].push(val);
+                    }
+                }else if(inputType === "radio"){
+                    if($(element).is(':checked')) {
+                        data[name] = val;
+                    }
+                }else{
+                    data[name] = val;
+                }
+                //console.log(element,index);
+            });
+            return data;
+        })($(this));
+    }
+});

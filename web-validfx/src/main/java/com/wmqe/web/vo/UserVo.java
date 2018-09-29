@@ -11,12 +11,15 @@ public class UserVo implements Serializable {
 
     @NotEmpty
     @Length(max = 15,min = 5,payload = Severity.Info.class)
+    @ChsChars
     private String userId;
     @Email
     @Length(max = 12,min = 8)
     private String email;
     @Mobile
     private String phone;
+    @ZipCode
+    private String zipCode;
 
     private String[] hobbies;
 
@@ -60,5 +63,13 @@ public class UserVo implements Serializable {
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    public String getZipCode() {
+        return zipCode;
+    }
+
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
     }
 }

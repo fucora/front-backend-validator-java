@@ -26,28 +26,7 @@
 //                var userId = form.find("input[name='userId']").val();
 //                var email = form.find("input[name='email']").val();
 
-                var data = {};
-                var inputs = form.find("[name]");
-                inputs.each(function(index,element){
-                    var name = $(element).attr("name");
-                    var val = $(element).val();
-                    var inputType = $(element).attr("type");
-                    if(inputType === "checkbox"){
-                        if($(element).is(':checked')){
-                            if(data[name] == null)
-                                data[name] = [];
-                            data[name].push(val);
-                        }
-                    }else if(inputType === "radio"){
-                        if($(element).is(':checked')) {
-                            data[name] = val;
-                        }
-                    }else{
-                        data[name] = val;
-                    }
-
-                    //console.log(element,index);
-                });
+                var data = $(form).jsonData();
                 api.post({
                     url: "/users/register", data: data, success: function (resp) {
                         console.log(resp);
@@ -72,6 +51,10 @@
         <div>
             <label for="field_mobile">手机:</label>
             <input id="field_mobile" class="easyui-validatebox" type="text" name="phone"></input>
+        </div>
+        <div>
+            <label for="field_zipCode">邮政编码:</label>
+            <input id="field_zipCode" class="easyui-validatebox" type="text" name="zipCode"></input>
         </div>
         <div>
             <label for="field_hobbies1">爱好（多选）:</label>
@@ -113,90 +96,11 @@
         </div>
     </form>
 </div>
-<!-- -->
-<script type="text/javascript">
-    var getValidType = function (rules) {
-        var retRules = "";
-        for(var i in rules){
-            var rule = rules[i];
-            var ruleInfo = rule.name;
-            if(rule.parameters){
-                var ps = "";
-                for(var p in rule.parameters){
-                    //if("message" == p)
-                    //    continue;
-                    var val = rule.parameters[p];
-                    if(typeof val === "number"){
-                        ps += val+",";
-                    }else if(typeof val === "string"){
-                        ps += "\"" + val +"\",";
-                    }else{
-                        ps += "\"" + val +"\",";
-                    }
-                }
-                if(ps.length > 1){
-                    retRules += "'" + ruleInfo + "[" + ps.substr(0,ps.length-1) + "]',"
-                    continue;
-                }
-            }
-            retRules += "'" + ruleInfo + "',";
-        }
-        if(rules.length > 1)
-            return "[" + retRules.substr(0,retRules.length-1) + "]";
-
-        return retRules.substr(0,retRules.length-1);
-    };
-    var bindVoModel = function (json) {
-        console.log(json,"bindVoModel");
-
-        for(var i in json){
-            var f = json[i];
-            var form = $("#"+f.form);
-            if(form[0]){
-                for(var j in f.items){
-                    var item = f.items[j];
-                    var input = form.find("input[name='" + item.propertyName + "']");
-                    if(input[0]){
-                        var data_options = "";
-                        if(item.required)
-                            data_options = "required:" + item.required + ",";
-                            //input.attr("required",item.required);
-                        if(item.rules && item.rules.length > 0) {
-                            var validType = getValidType(item.rules);
-                            //input.attr("validType", validType);
-                            data_options += "validType:" + validType;
-                        }
-                        input.attr("data-options",data_options);
-                    }
-                }
-            }
-        }
-
-//        $(function(){
-//
-//            // 通过json动态绑定校验
-//            //*
-//            // get(url) url = /vo_model.js  js扩展名的用意就是nginx可以做缓存
-//            var json_validation ={"email": {"required":"true","validType":"email"},"userId":{"required":"true"}};
-//
-//            for(var field in json_validation){
-//                var field_valid_data = json_validation[field];
-//                // console.log(field,field_valid_data);
-//                var input = $('#field_'+field)
-//                for(var attr in field_valid_data){
-//                    input.attr(attr,field_valid_data[attr]);
-//                }
-//            }
-//            // */
-//        });
-    };
-</script>
+<script type="text/javascript" src="/js/validate-rules.js?12"></script>
 <script type="text/javascript" src="/validators/models/ff:user,ff2:user?callback=bindVoModel"></script>
 
-<script type="text/javascript" src="/js/jquery.easyui.min.js"></script>
-
+<script type="text/javascript" src="/js/jquery.easyui.min.js"></script>s
 <!-- 自定义校验规则 -->
-<script type="text/javascript" src="/js/validate-rules.js?5"></script>
 <script type="text/javascript" src="/validators/rules?callback=extendValidateRules"></script>
 </body>
 </html>
