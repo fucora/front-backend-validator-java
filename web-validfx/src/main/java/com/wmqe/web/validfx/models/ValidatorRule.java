@@ -14,11 +14,11 @@ public class ValidatorRule extends ParameterMap{
         this.name = name;
     }
 
-    //    /**
-//     * 规则失败的消息
-//     */
-//    private String message;
-//
+    /**
+     * 规则失败的消息
+     */
+    private String message;
+
 //    public String getRuleName() {
 //        return ruleName;
 //    }
@@ -26,12 +26,12 @@ public class ValidatorRule extends ParameterMap{
 //    public void setRuleName(String ruleName) {
 //        this.ruleName = ruleName;
 //    }
-//
-//    public String getMessage() {
-//        return message;
-//    }
-//
-//    public void setMessage(String message) {
-//        this.message = message;
-//    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }

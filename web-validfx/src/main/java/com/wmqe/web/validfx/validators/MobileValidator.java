@@ -14,6 +14,6 @@ public class MobileValidator extends RegexValidator<Mobile> {
 
     }
     public MobileValidator()  {
-        super(REGEX, "手机号码格式不正确");
+        super(REGEX);
     }
 }

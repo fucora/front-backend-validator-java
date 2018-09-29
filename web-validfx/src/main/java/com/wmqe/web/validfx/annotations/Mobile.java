@@ -17,8 +17,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER})
 @Retention(RUNTIME)
 public @interface Mobile {
-    String value() default "";
-    
+
+    /**
+     *
+     * @return
+     */
     String message() default "手机格式不正确";
 
     Class<?>[] groups() default {};

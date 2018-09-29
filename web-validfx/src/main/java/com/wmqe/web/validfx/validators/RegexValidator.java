@@ -1,6 +1,7 @@
 package com.wmqe.web.validfx.validators;
 
 import com.wmqe.web.validfx.utils.StringUtil;
+import org.hibernate.validator.internal.engine.constraintvalidation.ConstraintValidatorContextImpl;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -19,14 +20,11 @@ public abstract class RegexValidator<A extends Annotation> extends BaseValidator
 
     }
 
-    public RegexValidator(String regex, String message) {
+    public RegexValidator(String regex) {
         if(StringUtil.isEmpty(regex))
             throw new NullPointerException("regex is null");
-        if( StringUtil.isEmpty(message))
-            throw new NullPointerException("message is null");
 
         setParameter(PARAM_NAME_REGEX,regex);
-        this.setMessage(message);
     }
 
     @Override
@@ -37,8 +35,9 @@ public abstract class RegexValidator<A extends Annotation> extends BaseValidator
     public boolean isValid(String value, ConstraintValidatorContext context) {
         String regex = getParameterString(PARAM_NAME_REGEX);
         if(StringUtil.isNotEmpty(value) && !Pattern.matches(regex, value)) {
+            String message = ((ConstraintValidatorContextImpl) context).getConstraintDescriptor().getMessageTemplate();
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(this.getMessage()).addConstraintViolation();
+            context.buildConstraintViolationWithTemplate(message).addConstraintViolation();
             return false;
         }
         return true;

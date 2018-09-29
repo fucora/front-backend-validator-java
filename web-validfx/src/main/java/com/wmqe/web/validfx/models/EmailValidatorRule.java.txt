@@ -1,5 +1,0 @@
-package com.wmqe.web.validfx.models;
-
-public class EmailValidatorRule extends RegexValidatorRule {
-
-}

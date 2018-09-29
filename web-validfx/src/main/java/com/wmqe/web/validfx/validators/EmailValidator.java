@@ -19,6 +19,6 @@ public class EmailValidator extends RegexValidator<Email> {
 
     }
     public EmailValidator()  {
-        super(REGEX_EMAIL, "格式不正确");
+        super(REGEX_EMAIL);
     }
 }

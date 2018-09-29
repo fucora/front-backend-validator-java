@@ -18,11 +18,21 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER})
 @Retention(RUNTIME)
 public @interface Email {
-    String value() default "";
-    
+    /**
+     *
+     * @return
+     */
     String message() default "Email格式不正确";
 
+    /**
+     *
+     * @return
+     */
     Class<?>[] groups() default {};
 
+    /**
+     *
+     * @return
+     */
     Class<? extends Payload>[] payload() default {};
 }

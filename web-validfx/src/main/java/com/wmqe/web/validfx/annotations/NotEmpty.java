@@ -17,7 +17,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @ReportAsSingleViolation
 public @interface NotEmpty {
-    
+    /**
+     *
+     * @return
+     */
     String message() default "不能为空";
 
     Class<?>[] groups() default {};

@@ -11,6 +11,16 @@ public class StringUtil {
 
     /**
      *
+     * @param obj
+     * @return
+     */
+    public static String convString(Object obj){
+       if(obj == null)
+           return null;
+       return obj.toString();
+    }
+    /**
+     *
      * @param name
      * @return
      */

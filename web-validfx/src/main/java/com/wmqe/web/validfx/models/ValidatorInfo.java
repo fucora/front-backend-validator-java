@@ -1,6 +1,6 @@
 package com.wmqe.web.validfx.models;
 
-public class ValidatorInfo extends ParameterMap{
+public class ValidatorInfo {
     /**
      * 属性名称
      */

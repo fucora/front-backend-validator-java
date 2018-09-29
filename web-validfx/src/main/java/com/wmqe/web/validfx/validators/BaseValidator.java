@@ -6,6 +6,7 @@ import com.wmqe.web.validfx.utils.StringUtil;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +18,12 @@ public abstract class BaseValidator <A extends Annotation> extends ParameterMap 
             Class <A> constraintAnnotation = (Class <A>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
             validatorName = constraintAnnotation.getSimpleName();
             validatorName = StringUtil.camelCase(validatorName);
+//            Object coann =  constraintAnnotation.newInstance();
+//            Method messageMethod = constraintAnnotation.getMethod("message");
+//            Object message = messageMethod.invoke(coann,null);
+//            if(message != null){
+//                setMessage(message.toString());
+//            }
         }catch (Exception ex){
             //System.out.println(ex);
             validatorName = getClass().getSimpleName();

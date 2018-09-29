@@ -121,12 +121,18 @@ public class ValidatorController {
                 for (int j = 0; j < methods.length; j++) {
                     Method method = methods[j];
                     String methodName = method.getName();
-                    if("groups".equals(methodName) || "payload".equals(methodName) ){
+                    if("groups".equals(methodName)){
+                        continue;
+                    }else if("payload".equals(methodName)){
                         continue;
                     }
                     try {
                         Object val = method.invoke(annotation,null);
-                        rule.setParameter(methodName,val);
+                        if("message".equals(methodName)){
+                            rule.setMessage(StringUtil.convString(val));
+                        }else {
+                            rule.setParameter(methodName, val);
+                        }
                     } catch (IllegalAccessException e) {
                         continue;
                     } catch (InvocationTargetException e) {
