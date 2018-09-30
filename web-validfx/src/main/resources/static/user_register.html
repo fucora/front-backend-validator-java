@@ -18,7 +18,7 @@
 
     <script type="text/javascript" src="/js/HttpClient.js"></script>
 
-    <script type="text/javascript" src="/js/validate-fx.js?18"></script>
+    <script type="text/javascript" src="/js/validate-fx.js?19"></script>
     <script type="text/javascript">
         // Validfx.debug = true;
         // Validfx.bindVoAttr = ":bindVo";
@@ -38,6 +38,10 @@
                 }
             });
         }
+        Validfx.onFormValidFail = function (context) {
+            console.log(context.form,"onFormValidFail.form");
+            console.log(context.items,"onFormValidFail.items");
+        };
     </script>
 </head>
 <body>

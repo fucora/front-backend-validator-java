@@ -2,6 +2,9 @@ if(typeof Validfx === "undefined"){
     var Validfx = {};
     Validfx.debug = false;
     Validfx.bindVoAttr = "bindVo";
+    Validfx.onFormValidFail = function (option) {
+
+    };
 }
 $.fn.extend({
     checkForm : function () {
@@ -9,6 +12,10 @@ $.fn.extend({
         var validate = form.form('validate')
         if(validate == true)
             return true;
+        if(Validfx.onFormValidFail){
+            var invalidItems = form.find(".validatebox-invalid");
+            Validfx.onFormValidFail({form : form, items : invalidItems});
+        }
         //var invalidMessage = form.find(".validatebox-invalid:first").attr("invalidMessage");
         //alert(invalidMessage);
         return false;
