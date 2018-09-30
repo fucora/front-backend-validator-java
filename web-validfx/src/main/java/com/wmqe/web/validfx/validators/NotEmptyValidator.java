@@ -9,7 +9,7 @@ import javax.validation.ConstraintValidatorContext;
 /**
  * 字符串非空校验类
  */
-public class NotEmptyValidator extends BaseValidator<NotEmpty> {
+public class NotEmptyValidator extends BaseItemValidator<NotEmpty> {
 
     @Override
     public void onLoad() {
@@ -23,11 +23,9 @@ public class NotEmptyValidator extends BaseValidator<NotEmpty> {
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         if(StringUtil.isEmpty(value)) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("不能为空").addConstraintViolation();
+            buildConstraintValidatorContext(context);
             return false;
         }
         return true;
     }
-
 }

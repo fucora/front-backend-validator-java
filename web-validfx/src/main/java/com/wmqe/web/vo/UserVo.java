@@ -4,6 +4,7 @@ import com.wmqe.web.validfx.annotations.*;
 import com.wmqe.web.validfx.models.Severity;
 
 import java.io.Serializable;
+import java.util.List;
 
 @ValidationModel("user")
 public class UserVo implements Serializable {
@@ -21,7 +22,8 @@ public class UserVo implements Serializable {
     @ZipCode
     private String zipCode;
 
-    private String[] hobbies;
+    @Size(min = 1, message = "至少有{min}个爱好")
+    private List<String> hobbies;
 
     private String gender;
 
@@ -49,11 +51,11 @@ public class UserVo implements Serializable {
         this.phone = phone;
     }
 
-    public String[] getHobbies() {
+    public List<String> getHobbies() {
         return hobbies;
     }
 
-    public void setHobbies(String[] hobbies) {
+    public void setHobbies(List<String> hobbies) {
         this.hobbies = hobbies;
     }
 

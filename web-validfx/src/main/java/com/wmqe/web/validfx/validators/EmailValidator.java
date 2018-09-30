@@ -12,13 +12,13 @@ import java.util.regex.Pattern;
  */
 public class EmailValidator extends RegexValidator<Email> {
 
-    public static final String REGEX_EMAIL = "^[\\w-]+@[\\w-]+(\\.[\\w-]+)+$";
+    public static final String REG_EXP = "^[\\w-]+@[\\w-]+(\\.[\\w-]+)+$";
 
     @Override
     public void onLoad() {
 
     }
     public EmailValidator()  {
-        super(REGEX_EMAIL);
+        super(REG_EXP);
     }
 }

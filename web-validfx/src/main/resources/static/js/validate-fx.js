@@ -3,6 +3,70 @@ if(typeof Validfx === "undefined"){
     Validfx.debug = false;
     Validfx.bindVoAttr = "bindVo";
 }
+$.fn.extend({
+    checkForm : function () {
+        var form = $(this);
+        var validate = form.form('validate')
+        if(validate == true)
+            return true;
+        //var invalidMessage = form.find(".validatebox-invalid:first").attr("invalidMessage");
+        //alert(invalidMessage);
+        return false;
+    },
+    jsonData:function() {
+        return (function (element) {
+            var form = $.getForm(element);
+            if(form[0] == null){
+                return null;
+            }
+            var data = {};
+            var inputs = form.find("[name]");
+            inputs.each(function(index,element){
+                var name = $(element).attr("name");
+                var val = $(element).val();
+                var inputType = $(element).attr("type");
+                if(inputType === "checkbox"){
+                    if($(element).is(':checked')){
+                        if(data[name] == null)
+                            data[name] = [];
+                        data[name].push(val);
+                    }
+                }else if(inputType === "radio"){
+                    if($(element).is(':checked')) {
+                        data[name] = val;
+                    }
+                }else{
+                    data[name] = val;
+                }
+                //console.log(element,index);
+            });
+            return data;
+        })($(this));
+    },
+    submitData : function (option) {
+        var url = option.url;
+        var form = null;
+        var isValid = option.isValid;
+        if(isValid != false)
+            isValid = true;
+        if(option.element)
+            form = $.getForm(option.element);
+        if(form === null){
+            form = $.getForm($(this));
+        }
+        if(form[0] === null){
+            return;
+        }
+        var api = new HttpClient();
+        if(form.checkForm() || !isValid || Validfx.debug) {
+            var data = $(form).jsonData();
+            api.post({
+                url: url, data: data, success: option.success
+            });
+        }
+    }
+});
+
 $.extend($.fn.validatebox.defaults.rules, {
     equals: {
         validator: function(value,param){
@@ -75,6 +139,25 @@ $(function () {
                         }
                         return len >= params[0] && len<= params[1];
                     };
+                }else if(rule.ruleName === "size"){
+                    var thisRule = regexRules[rule.ruleName];
+                    thisRule.message = rule.message;
+                    thisRule.validator = function(val, params){
+                        var len = $("[name=" + val + "]:checked").length
+
+                        if(params[0] > 0 && len < params[0]){
+                            if(thisRule.message === null)
+                                thisRule.message = "输入的字符长度不能少于{0}";
+                            else
+                                thisRule.message = thisRule.message.replace("{min}",params[0]);
+                        }else{
+                            if(thisRule.message === null)
+                                thisRule.message = "输入的字符长度不能超过{1}";
+                            else
+                                thisRule.message = thisRule.message.replace("{max}",params[1]);
+                        }
+                        return len >= params[0] && len<= params[1];
+                    }
                 }
             })();
         }
@@ -100,11 +183,13 @@ $(function () {
     });
     if(bindInfo.length > 0){
         $.callJsonp("/validators/models/" + bindInfo,function (json) {
-            bindVoModel(json); // $.bindForm("ff:user,ff2:user");
+            __bindVoModel(json); // $.bindForm("ff:user,ff2:user");
         });
     }
 });
-var getValidType = function (rules) {
+
+
+var __getValidType = function (rules) {
     var retRules = [];
     for(var i in rules){
         var rule = rules[i];
@@ -134,25 +219,29 @@ var getValidType = function (rules) {
         return retRules[0];
 
     return retRules;
-    //if(rules.length > 1)
-    //    return "[" + retRules.substr(0,retRules.length-1) + "]";
-
-    //return retRules.substr(0,retRules.length-1);
 };
-var bindVoModel = function (json) {
+var __bindVoModel = function (json) {
     if(Validfx.debug)
         console.log(json,"bindVoModel");
 
     for(var i in json){
         var f = json[i];
         var form = $("#"+f.form);
-        if(form[0]){
+        if(form.length > 0){
             for(var j in f.items){
                 var item = f.items[j];
-                var input = form.find("input[name='" + item.propertyName + "']");
-                if(input[0]){
+                var inputs = form.find("input[name='" + item.propertyName + "']");
+                if(inputs.length == 0)
+                    break;
+                var input = inputs.length == 1 ? $(inputs[0]) : null;
+                if(input == null){
+                    // 说明有多个
+                    input = $("<input type='hidden' name='group_" + item.propertyName + "' value='" + item.propertyName + "' />");
+                    $(inputs[0]).before(input);
+                }
+                if(input){
                     if(item.rules && item.rules.length > 0) {
-                        var validType = getValidType(item.rules);
+                        var validType = __getValidType(item.rules);
                         input.validatebox({
                             required: item.required,
                             validType: validType
@@ -169,57 +258,3 @@ var bindVoModel = function (json) {
     }
 };
 
-$.fn.extend({
-    jsonData:function() {
-        return (function (element) {
-            var form = $.getForm(element);
-            if(form[0] == null){
-                return null;
-            }
-            var data = {};
-            var inputs = form.find("[name]");
-            inputs.each(function(index,element){
-                var name = $(element).attr("name");
-                var val = $(element).val();
-                var inputType = $(element).attr("type");
-                if(inputType === "checkbox"){
-                    if($(element).is(':checked')){
-                        if(data[name] == null)
-                            data[name] = [];
-                        data[name].push(val);
-                    }
-                }else if(inputType === "radio"){
-                    if($(element).is(':checked')) {
-                        data[name] = val;
-                    }
-                }else{
-                    data[name] = val;
-                }
-                //console.log(element,index);
-            });
-            return data;
-        })($(this));
-    },
-    submitData : function (option) {
-        var url = option.url;
-        var form = null;
-        var isValid = option.isValid;
-        if(isValid != false)
-            isValid = true;
-        if(option.element)
-            form = $.getForm(option.element);
-        if(form === null){
-            form = $.getForm($(this));
-        }
-        if(form[0] === null){
-            return;
-        }
-        var api = new HttpClient();
-        if(form.form('validate') || !isValid || Validfx.debug) {
-            var data = $(form).jsonData();
-            api.post({
-                url: url, data: data, success: option.success
-            });
-        }
-    }
-});

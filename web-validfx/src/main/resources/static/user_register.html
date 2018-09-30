@@ -18,9 +18,9 @@
 
     <script type="text/javascript" src="/js/HttpClient.js"></script>
 
-    <script type="text/javascript" src="/js/validate-fx.js?8"></script>
+    <script type="text/javascript" src="/js/validate-fx.js?18"></script>
     <script type="text/javascript">
-        Validfx.debug = true;
+        // Validfx.debug = true;
         // Validfx.bindVoAttr = ":bindVo";
         function register() {
             $(event.target).submitData({
@@ -61,7 +61,7 @@
             <input id="field_zipCode" class="easyui-validatebox" type="text" name="zipCode"></input>
         </div>
         <div>
-            <label for="field_hobbies1">爱好（多选）:</label>
+            <label for="field_hobbies1" name="group_hobbies">爱好（多选）:</label>
             <input id="field_hobbies1" class="easyui-validatebox" type="checkbox" value="运动" name="hobbies"/>运动</input>
             <input id="field_hobbies2" class="easyui-validatebox" type="checkbox" value="音乐" name="hobbies"/>音乐</input>
             <input id="field_hobbies3" class="easyui-validatebox" type="checkbox" value="绘画" name="hobbies"/>绘画</input>
@@ -88,11 +88,11 @@
         </div>
         <div>
             <label for="field_password">密码:</label>
-            <input id="field_password" class="easyui-validatebox" type="text" name="password"></input>
+            <input id="field_password" class="easyui-validatebox" type="password" name="password"></input>
         </div>
         <div>
             <label for="field_repwd">确认密码:</label>
-            <input id="field_repwd" class="easyui-validatebox" type="text" name="repwd" required="true" validType="equals['#field_password','确认密码和密码不一致']"></input>
+            <input id="field_repwd" class="easyui-validatebox" type="password" name="repwd" required="true" validType="equals['#field_password','确认密码和密码不一致']"></input>
         </div>
 
         <div>

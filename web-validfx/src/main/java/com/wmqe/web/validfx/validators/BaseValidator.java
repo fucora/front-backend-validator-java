@@ -2,6 +2,7 @@ package com.wmqe.web.validfx.validators;
 
 import com.wmqe.web.validfx.models.ParameterMap;
 import com.wmqe.web.validfx.utils.StringUtil;
+import org.hibernate.validator.internal.engine.constraintvalidation.ConstraintValidatorContextImpl;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -11,7 +12,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class BaseValidator <A extends Annotation> extends ParameterMap implements ConstraintValidator<A, String> {
+public abstract class BaseValidator <A extends Annotation,V> extends ParameterMap implements ConstraintValidator<A, V> {
 
     public BaseValidator() {
         try{
@@ -31,6 +32,26 @@ public abstract class BaseValidator <A extends Annotation> extends ParameterMap 
         }
 
         onLoad();
+    }
+
+    public String getMessageTemplate(ConstraintValidatorContext context)
+    {
+        if(context == null)
+            return null;
+
+        if(context.getClass().equals(ConstraintValidatorContextImpl.class)){
+            String message = ((ConstraintValidatorContextImpl) context).getConstraintDescriptor().getMessageTemplate();
+
+            return  message;
+        }
+
+        return  null;
+    }
+
+    public void buildConstraintValidatorContext(ConstraintValidatorContext context){
+        String message = getMessageTemplate(context);
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(message).addConstraintViolation();
     }
 
     public abstract void onLoad();
@@ -101,7 +122,7 @@ public abstract class BaseValidator <A extends Annotation> extends ParameterMap 
     }
 
     @Override
-    public abstract boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext);
+    public abstract boolean isValid(V s, ConstraintValidatorContext constraintValidatorContext);
 
     public String getValidatorName(){
         return validatorName;

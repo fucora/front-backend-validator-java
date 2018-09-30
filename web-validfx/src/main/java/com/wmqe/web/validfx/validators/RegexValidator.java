@@ -8,7 +8,7 @@ import javax.validation.ConstraintValidatorContext;
 import java.lang.annotation.Annotation;
 import java.util.regex.Pattern;
 
-public abstract class RegexValidator<A extends Annotation> extends BaseValidator<A> {
+public abstract class RegexValidator<A extends Annotation> extends BaseItemValidator<A> {
 
     private final String PARAM_NAME_REGEX = "regex";
     public RegexValidator() {
@@ -35,9 +35,7 @@ public abstract class RegexValidator<A extends Annotation> extends BaseValidator
     public boolean isValid(String value, ConstraintValidatorContext context) {
         String regex = getParameterString(PARAM_NAME_REGEX);
         if(StringUtil.isNotEmpty(value) && !Pattern.matches(regex, value)) {
-            String message = ((ConstraintValidatorContextImpl) context).getConstraintDescriptor().getMessageTemplate();
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(message).addConstraintViolation();
+            buildConstraintValidatorContext(context);
             return false;
         }
         return true;

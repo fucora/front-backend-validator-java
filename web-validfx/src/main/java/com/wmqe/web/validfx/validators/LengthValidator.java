@@ -7,7 +7,7 @@ import javax.validation.ConstraintValidatorContext;
 /**
  * 字符长度校验类
  */
-public class LengthValidator extends BaseValidator<Length> {
+public class LengthValidator extends BaseItemValidator<Length> {
     private final String PARAM_NAME_MIN = "min";
     private final String PARAM_NAME_MAX = "max";
     @Override
@@ -33,15 +33,15 @@ public class LengthValidator extends BaseValidator<Length> {
         int valueLength = value.length();
         if(max == Integer.MAX_VALUE && min > 0 && valueLength < min) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("长度至少为"+min+"个字符").addConstraintViolation();
+            context.buildConstraintViolationWithTemplate("长度至少为{min}个字符").addConstraintViolation();
             return false;
         } else if(min == 0 && max < Integer.MAX_VALUE && valueLength > min) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("长度不能超过"+max+"个字符").addConstraintViolation();
+            context.buildConstraintViolationWithTemplate("长度不能超过{max}个字符").addConstraintViolation();
             return false;
         } else if(min > 0 && max < Integer.MAX_VALUE && (valueLength > max || valueLength < min)) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("长度必须在"+min+"至"+max+"的范围").addConstraintViolation();
+            context.buildConstraintViolationWithTemplate("长度必须在{min}至{max}的范围").addConstraintViolation();
             return false;
         }
 
