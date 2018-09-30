@@ -1,12 +1,20 @@
+// 配置、事件信息
 if(typeof Validfx === "undefined"){
     var Validfx = {};
-    Validfx.debug = false;
-    Validfx.bindVoAttr = "bindVo";
-    Validfx.onFormValidFail = function (context) {
+};
+Validfx.debug = false;
+Validfx.bindVoAttr = "bindVo";
+Validfx.url = {};
+Validfx.url.validRules = "/validators/rules"; // 获取校验规则的URL路径
+Validfx.url.validModels = "/validators/models/"; // 获取校验信息的URL路径
+Validfx.onFormValidFail = function (context) {};
 
-    };
-}
+// jquery 扩展
 $.fn.extend({
+    /**
+     * 表单对象扩展方法 - 表单校验检查（触发 Validfx.onFormValidFail 事件）
+     * @returns {boolean} 是否检查成功
+     */
     checkForm : function () {
         var form = $(this);
         var validate = form.form('validate')
@@ -16,10 +24,13 @@ $.fn.extend({
             var invalidItems = form.find(".validatebox-invalid");
             Validfx.onFormValidFail({form : form, items : invalidItems});
         }
-        //var invalidMessage = form.find(".validatebox-invalid:first").attr("invalidMessage");
-        //alert(invalidMessage);
+
         return false;
     },
+    /**
+     * 表单对象扩展方法 - 构建指定表单的Json格式数据
+     * @returns {json} 表单数据
+     */
     jsonData:function() {
         return (function (element) {
             var form = $.getForm(element);
@@ -45,19 +56,22 @@ $.fn.extend({
                 }else{
                     data[name] = val;
                 }
-                //console.log(element,index);
             });
             return data;
         })($(this));
     },
-    submitData : function (option) {
-        var url = option.url;
+    /**
+     * 表单对象扩展方法 - 提交表单
+     * @param args
+     */
+    submitData : function (args) {
+        var url = args.url;
         var form = null;
-        var isValid = option.isValid;
+        var isValid = args.isValid;
         if(isValid != false)
             isValid = true;
-        if(option.element)
-            form = $.getForm(option.element);
+        if(args.element)
+            form = $.getForm(args.element);
         if(form === null){
             form = $.getForm($(this));
         }
@@ -68,7 +82,7 @@ $.fn.extend({
         if(form.checkForm() || !isValid || Validfx.debug) {
             var data = $(form).jsonData();
             api.post({
-                url: url, data: data, success: option.success
+                url: url, data: data, success: args.success
             });
         }
     }
@@ -77,11 +91,6 @@ $.fn.extend({
 $.extend($.fn.validatebox.defaults.rules, {
     equals: {
         validator: function(value,param){
-            // if(param.length > 1){
-            //     this.message = param[1];
-            //     $(this).attr("invalidMessage",param[1]);
-            //     $.parser.parse($(this));
-            // }
             return value == $(param[0]).val();
         },
         message: '{1}'
@@ -96,6 +105,11 @@ $.extend({
             success: success
         });
     },
+    /**
+     * 获取表单对象
+     * @param element
+     * @returns {*}
+     */
     getForm : function (element) {
         var form = null;
         if(element != null){
@@ -118,12 +132,14 @@ $.extend({
 });
 
 $(function () {
-    $.callJsonp("/validators/rules",function (rules) {
+    // 1. 加载校验规则
+    $.callJsonp(Validfx.url.validRules,function (rules) {
         var regexRules = {};
         for(var i in rules){
             var rule = rules[i];
             regexRules[rule.ruleName] = {};
             (function () {
+                // 如果是正则的校验，构建正则校验器
                 if(rule.regex){
                     var thisRule = regexRules[rule.ruleName];
                     thisRule.regex = new RegExp(rule.regex);
@@ -134,7 +150,7 @@ $(function () {
                         }
                         return thisRule.regex.test(value);
                     };
-                }else if(rule.ruleName === "length"){
+                }else if(rule.ruleName === "length"){ // 如果是字符串长度校验
                     var thisRule = regexRules[rule.ruleName];
                     thisRule.message = "输入的字符长度不能超过{1}";
                     thisRule.validator = function(val, params){
@@ -146,7 +162,7 @@ $(function () {
                         }
                         return len >= params[0] && len<= params[1];
                     };
-                }else if(rule.ruleName === "size"){
+                }else if(rule.ruleName === "size"){ // 如果是数组长度校验
                     var thisRule = regexRules[rule.ruleName];
                     thisRule.message = rule.message;
                     thisRule.validator = function(val, params){
@@ -170,10 +186,11 @@ $(function () {
         }
         if(Validfx.debug)
             console.log(regexRules,"extendValidateRules");
-
+        // 扩展校验
         $.extend($.fn.validatebox.defaults.rules,regexRules);
     });
 
+    // 2.加载当前表单对象的校验信息
     var bindInfo = "";
     var formIdx = 0;
     $(this).find("form").each(function(index,element){
@@ -189,14 +206,19 @@ $(function () {
         }
     });
     if(bindInfo.length > 0){
-        $.callJsonp("/validators/models/" + bindInfo,function (json) {
-            __bindVoModel(json); // $.bindForm("ff:user,ff2:user");
+        $.callJsonp(Validfx.url.validModels + bindInfo,function (json) {
+            __bindVoModel(json);
         });
     }
 });
 
-
-var __getValidType = function (rules) {
+/**
+ * 构建EasyUI 的 ValidType
+ * @param rules
+ * @returns {*}
+ * @private
+ */
+var __buildValidType = function (rules) {
     var retRules = [];
     for(var i in rules){
         var rule = rules[i];
@@ -204,8 +226,6 @@ var __getValidType = function (rules) {
         if(rule.parameters){
             var ps = "";
             for(var p in rule.parameters){
-                //if("message" == p)
-                //    continue;
                 var val = rule.parameters[p];
                 if(typeof val === "number"){
                     ps += val+",";
@@ -248,7 +268,7 @@ var __bindVoModel = function (json) {
                 }
                 if(input){
                     if(item.rules && item.rules.length > 0) {
-                        var validType = __getValidType(item.rules);
+                        var validType = __buildValidType(item.rules);
                         input.validatebox({
                             required: item.required,
                             validType: validType

@@ -18,7 +18,7 @@
 
     <script type="text/javascript" src="/js/HttpClient.js"></script>
 
-    <script type="text/javascript" src="/js/validate-fx.js?19"></script>
+    <script type="text/javascript" src="/js/validate-fx.js"></script>
     <script type="text/javascript">
         // Validfx.debug = true;
         // Validfx.bindVoAttr = ":bindVo";
@@ -38,6 +38,11 @@
                 }
             });
         }
+        $(function () {
+            // 加载测试数据
+            $("#ff").form('load', '/users/测试用户信息');
+        });
+
         Validfx.onFormValidFail = function (context) {
             console.log(context.form,"onFormValidFail.form");
             console.log(context.items,"onFormValidFail.items");
@@ -47,7 +52,7 @@
 <body>
 <div style="width:230px;background:#fafafa;padding:10px;">
     <div style="padding:3px 2px;border-bottom:1px solid #ccc">用户注册</div>
-    <form method="post" class="ff" bindVo="user">
+    <form id="ff" method="post" class="ff" bindVo="user">
         <div>
             <label for="field_userId">用户名:</label>
             <input id="field_userId" class="easyui-validatebox" type="text" name="userId"></input>
