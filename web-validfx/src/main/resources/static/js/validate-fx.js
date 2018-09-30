@@ -2,7 +2,7 @@ if(typeof Validfx === "undefined"){
     var Validfx = {};
     Validfx.debug = false;
     Validfx.bindVoAttr = "bindVo";
-    Validfx.onFormValidFail = function (option) {
+    Validfx.onFormValidFail = function (context) {
 
     };
 }
